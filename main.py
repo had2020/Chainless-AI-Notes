@@ -34,7 +34,7 @@ def allowed_file(filename):
 @app.route('/')
 def index():
   return render_template('index.html')
-
+#TODO remove old png to pdf code. Also freeze requiremnets for all project into txts. Lastly turn them into apps, with pyinstaller or likewise.
 @app.route('/process', methods=['POST', 'GET'])
 def process():
     if 'file' not in request.files:
