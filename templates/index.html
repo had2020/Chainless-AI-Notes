@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Microphone Toggle</title>
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+</head>
+<style type="text/css">
+  :root {
+font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+line-height: 1.5;
+font-weight: 400;
+
+color-scheme: light dark;
+color: rgba(255, 255, 255, 0.87);
+background-color: #242424;
+
+font-synthesis: none;
+text-rendering: optimizeLegibility;
+-webkit-font-smoothing: antialiased;
+-moz-osx-font-smoothing: grayscale;
+align-items: center;
+text-align: center;
+}
+.title {
+  text-align: center;
+  background-color: #444;
+  margin-bottom: 10px;
+}
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  border-radius: 5px; 
+  background-color: #242424; 
+  border: 1px solid #838383;  
+  margin: 10px auto; 
+  text-align: center;
+}
+.body {
+background-color: #333;
+}
+.input {
+width: 300px;
+height: 30px;
+padding: 0.5rem;
+border-radius: 0.5rem;
+border: none;
+margin: 0.5rem;
+background-color: #444;
+display: block; 
+width: 200px; 
+margin: 0 auto; 
+margin-top: 20px;
+}
+.button {
+width: 300px;
+height: 30px;
+padding: 0.5rem;
+border-radius: 0.5rem;
+border: none;
+margin: 0.5rem;
+background-color: #444;
+text-align: center;
+display: block; 
+width: 200px; 
+margin: 0 auto; 
+margin-top: 20px;
+}
+.p {
+text-align: center;
+color: black;
+
+}
+</style>
+<body>
+    <button id="mic-toggle">Toggle Microphone</button>
+    <script>
+        var socket = io();
+
+        document.getElementById('mic-toggle').addEventListener('click', function() {
+            socket.emit('toggle_mic');
+        });
+
+        socket.on('mic_status', function(data) {
+            var button = document.getElementById('mic-toggle');
+            if (data.status === 'started') {
+                button.textContent = 'Stop Microphone';
+            } else {
+                button.textContent = 'Toggle Microphone';
+            }
+        });
+
+        socket.on('audio_data', function(data) {
+            // TODO handel audio data here and send it to an
+            // llm to be processed into notes if seleced or 
+            // just add option to transcode it
+        });
+    </script>
+</body>
+</html>
