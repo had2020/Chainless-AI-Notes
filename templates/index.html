@@ -1,8 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Microphone Toggle</title>
-    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+    <title>Chainless AI Notes</title>
 </head>
 <style type="text/css">
   :root {
@@ -67,36 +66,40 @@ display: block;
 width: 200px; 
 margin: 0 auto; 
 margin-top: 20px;
+margin-bottom: 20px;
 }
 .p {
 text-align: center;
 color: black;
-
 }
+
+.declaration_box {
+    width: 500px; 
+    height: auto;  
+    background-color: #454545; 
+    border: 1px solid #ddd;  
+    padding: 20px;  
+    border-radius: 5px; 
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); 
+    margin: 10px auto; 
+}
+
 </style>
 <body>
-    <button id="mic-toggle">Toggle Microphone</button>
-    <script>
-        var socket = io();
-
-        document.getElementById('mic-toggle').addEventListener('click', function() {
-            socket.emit('toggle_mic');
-        });
-
-        socket.on('mic_status', function(data) {
-            var button = document.getElementById('mic-toggle');
-            if (data.status === 'started') {
-                button.textContent = 'Stop Microphone';
-            } else {
-                button.textContent = 'Toggle Microphone';
-            }
-        });
-
-        socket.on('audio_data', function(data) {
-            // TODO handel audio data here and send it to an
-            // llm to be processed into notes if seleced or 
-            // just add option to transcode it
-        });
-    </script>
+    <div class="container">
+        <h1 class="title">Chainless AI Notes</h1>
+        <div class="declaration_box">
+            <p>🎤 Record your leacture and convert it to text.</p>
+            <p>📖 Need better notes? </p>
+            <p>🤖 Use our llm to summarize leacture into notes.</p>
+        </div>
+        <form action="/process" method="POST">
+            <button class="button" type="submit">👁️‍🗨️ Submit Leacture</button>
+            <button class="button" id="startButton">👂 Start Recording</button>
+            <button class="button" id="stopButton">🛑 Stop Recording</button>
+            <audio id="audioPlayer" controls></audio> 
+            <p>Text from leacture</p>
+        </form>
+      </div>
 </body>
 </html>
