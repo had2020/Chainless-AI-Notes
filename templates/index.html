@@ -94,10 +94,12 @@ color: black;
             <p>🤖 Use our llm to summarize leacture into notes.</p>
         </div>
         <form action="/process" method="POST">
-            <button class="button" type="submit">👁️‍🗨️ Submit Leacture</button>
-            <button class="button" id="startButton">👂 Start Recording</button>
-            <button class="button" id="stopButton">🛑 Stop Recording</button>
-            <p>Text from leacture</p>
+            <button class="button" type="submit">🟢 Record Leacture</button>
+            <button class="button" type="submit">🛑 Stop Leacture</button>
+        </form>
+        <form action="/record_software" method="POST">
+            <button class="button" type="submit">🟢 Record Software</button>
+            <button class="button" type="submit">🛑 Stop Software</button>
         </form>
       </div>
 </body>
