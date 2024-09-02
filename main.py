@@ -1,14 +1,15 @@
 from flask import Flask, render_template, send_file, request , jsonify
 from flask_cors import CORS
-from werkzeug.utils import secure_filename
 from pvrecorder import PvRecorder
 import wave
 import struct
 import sounddevice as sd
-from scipy.io.wavfile import write
+import soundcard as sc
+import soundfile as sf
 
 wav_file = None
 recording = False
+soft_recording = False
 
 app = Flask(__name__)
 # needed for packs use
@@ -34,7 +35,6 @@ def index():
 @app.route('/record', methods=['POST', 'GET'])
 def process():
     global recording, wav_file
-    print(recording)
     recording = not recording 
     if recording == False:
         wav_file.close()
@@ -46,7 +46,7 @@ def process():
         wav_file = wave.open('recording.wav', 'wb')
         wav_file.setnchannels(1)  # Mono channel
         wav_file.setsampwidth(2)   # 16-bit audio
-        wav_file.setframerate(16000)  # Sample rate of 16kHz (adjust as needed)
+        wav_file.setframerate(16000)  # Sample rate of 16kHz 
 
         recorder.start()
 
@@ -60,15 +60,16 @@ def process():
 
 @app.route('/record_software', methods=['POST', 'GET'])
 def record_software():
-    fs = 44100  
-    seconds = 10  
+    global soft_recording, wav_file
 
-    print("Recording...")
-    myrecording = sd.rec(int(seconds * fs), samplerate=fs, channels=2)
-    sd.wait()  
-    print("Recording finished!")
-
-    write('output.wav', fs, myrecording)
+    output_file_name = "soft_out.wav"
+    samplerrate = 48000
+    duration = 5
+    
+    with sc.get_microphone(id=str(sc.default_speaker().name), include_loopback=True).recorder(samplerate=samplerrate) as mic:
+        data = mic.record(numframes=samplerrate*duration)
+        sf.write(file=output_file_name, data=data[:, 0], samplerate=samplerrate)
+    
     return render_template('index.html')
 
 if __name__ == '__main__':
