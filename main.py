@@ -62,13 +62,12 @@ def process():
 def record_software():
     global soft_recording, wav_file
 
-    output_file_name = "soft_out.wav"
-    samplerrate = 48000
-    duration = 5
-    
-    with sc.get_microphone(id=str(sc.default_speaker().name), include_loopback=True).recorder(samplerate=samplerrate) as mic:
-        data = mic.record(numframes=samplerrate*duration)
-        sf.write(file=output_file_name, data=data[:, 0], samplerate=samplerrate)
+    def callback(indata, outdata, frames, time, status):
+        outdata[:] = indata
+
+    # Replace 'virtual_audio_cable' with the actual name of your virtual audio device
+    with sd.InputStream(device='virtual_audio_cable', callback=callback):
+        input()  # Wait for user input to stop recording
     
     return render_template('index.html')
 
