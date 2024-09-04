@@ -6,14 +6,20 @@ import struct
 import sounddevice as sd
 import soundcard as sc
 import soundfile as sf
+import pvrecorder
 
 wav_file = None
+wav_file1 = None
 recording = False
 soft_recording = False
 
 app = Flask(__name__)
 # needed for packs use
 CORS(app)
+
+# soft recorder 
+soft_devices = PvRecorder.get_available_devices()
+soft_recorder = PvRecorder(frame_length=512, device_index=0)
 
 devices = PvRecorder.get_available_devices()
 print("Available audio devices:")
@@ -60,15 +66,38 @@ def process():
 
 @app.route('/record_software', methods=['POST', 'GET'])
 def record_software():
-    global soft_recording, wav_file
+    global soft_recording, wav_file1
 
+    #Todo warn macos that this will not work and use blackhole
+    """ Windows & Linux ONLY """
     def callback(indata, outdata, frames, time, status):
         outdata[:] = indata
 
-    # Replace 'virtual_audio_cable' with the actual name of your virtual audio device
+    # Replace 'virtual_audio_cable' with the actual name of virtual audio device
     with sd.InputStream(device='virtual_audio_cable', callback=callback):
         input()  # Wait for user input to stop recording
-    
+
+    """ failed attempt
+    soft_recording = not soft_recording
+    if soft_recording == False:
+        wav_file1.close()
+        wav_file1 = None
+        soft_recorder.stop()
+        soft_recorder.delete()
+
+    if soft_recording == True:
+        wav_file1 = wave.open('soft_recording.wav', 'wb')
+        wav_file1.setnchannels(1) 
+        wav_file1.setsampwidth(2)   
+        wav_file1.setframerate(16000)  
+        soft_recorder.start()
+
+    while soft_recording:
+        audio_frame = soft_recorder.read()
+        audio_bytes = struct.pack('<' + ('h' * len(audio_frame)), *audio_frame)
+        wav_file1.writeframes(audio_bytes)
+    """
+
     return render_template('index.html')
 
 if __name__ == '__main__':
