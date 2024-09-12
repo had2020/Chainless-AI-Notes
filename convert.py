@@ -1,20 +1,30 @@
 import speech_recognition as sr
-
-# obtain path to "english.wav" in the same folder as this script
 from os import path
-AUDIO_FILE = path.join(path.dirname(path.realpath(__file__)), "english.wav")
-# AUDIO_FILE = path.join(path.dirname(path.realpath(__file__)), "french.aiff")
-# AUDIO_FILE = path.join(path.dirname(path.realpath(__file__)), "chinese.flac")
 
-# use the audio file as the audio source
-r = sr.Recognizer()
-with sr.AudioFile(AUDIO_FILE) as source:
-    audio = r.record(source)  # read the entire audio file
+def convert_to_text():
+    print("Converting audio to text...")
+    AUDIO_FILE = path.join(path.dirname(path.realpath(__file__)), "recording.wav")
 
-# recognize speech using Sphinx
-try:
-    print("Sphinx thinks you said " + r.recognize_sphinx(audio))
-except sr.UnknownValueError:
-    print("Sphinx could not understand audio")
-except sr.RequestError as e:
-    print("Sphinx error; {0}".format(e))
+    # use audio file as audio source
+    r = sr.Recognizer()
+    with sr.AudioFile(AUDIO_FILE) as source:
+        audio = r.record(source)  # read entire file
+
+    # recognize speech with sphinx
+    try:
+        converted_text = r.recognize_sphinx(audio)
+        print("Sphinx thinks you said " + converted_text)
+        write_to_file(converted_text)
+        return converted_text
+    except sr.UnknownValueError:
+        print("Sphinx could not understand audio")
+        write_to_file("could not understand audio")
+        return "could not understand audio"
+    except sr.RequestError as e:
+        print("Sphinx error; {0}".format(e))
+        write_to_file("Sphinx error; {0}".format(e))
+        return "Sphinx error; {0}".format(e)
+
+def write_to_file(text):
+    with open('notes.txt', 'w') as f:
+        f.write(text)
